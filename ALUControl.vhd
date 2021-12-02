@@ -6,17 +6,17 @@ entity ALUControl is
    port(clk: in std_logic;
         ALUOp: in std_logic_vector(2 downto 0);
         FunctionCode: in std_logic_vector(5 downto 0);
-        ALUFunction: out std_logic_vector(2 downto 0));
+        ALUFunction: out std_logic_vector(3 downto 0));
 end ALUControl;
 -- ALUFunction (mostly same as ALUOp):
 -- 000: add
 -- 001: subtract
--- 010: SKIP
--- 011: SKIP
+-- 010: shift left
+-- 011: jump
 -- 100: AND
 -- 101: OR
 -- 110: XOR
--- 111: shift
+-- 111: shift right
 
 architecture ALUControlBehav of ALUControl is
 begin
@@ -35,9 +35,9 @@ begin
             elsif FunctionCode = "100110" then -- xor
                ALUFunction <= "110";
             elsif FunctionCode = "101010" then -- slt
-               ALUFunction <= "001"; -- subtract?
+               ALUFunction <= "001";
             elsif FunctionCode = "000000" then -- sll
-               ALUFunction <= "111";
+               ALUFunction <= "010";
             elsif FunctionCode = "000010" then -- srl
                ALUFunction <= "111";
             end if;
