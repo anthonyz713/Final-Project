@@ -6,7 +6,7 @@ entity ControlUnit is
    port(clk, reset: in std_logic;
         opcode: in std_logic_vector(5 downto 0);
         RegDst, Jump, Branch, MemRead, MemtoReg, MemWrite, ALUSrc, RegWrite: out std_logic;
-        ALUOP: out std_logic_vector(3 downto 0));
+        ALUOp: out std_logic_vector(3 downto 0));
 end ControlUnit;
 -- ALUFunction (Textbook 4.4 Pg. 259):
 -- 0000: AND

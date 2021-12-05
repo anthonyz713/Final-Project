@@ -10,7 +10,7 @@ entity InstructionMemory is
 end InstructionMemory;
 
 architecture InstructionMemoryBehav of InstructionMemory is
-type ROM_array is array (0 to 19) of std_logic_vector(7 downto 0);
+type ROM_array is array (0 to 15) of std_logic_vector(7 downto 0);
 constant ROM: ROM_array := (
    -- add $t0, $t1, $t2
    "00000001",
@@ -34,20 +34,14 @@ constant ROM: ROM_array := (
    "00000000",
    "00010001",
    "10000000",
-   "01000000",
-
-   -- j 0x39796
-   "00001000",
-   "00000011",
-   "10010111",
-   "10010110"
+   "01000000"
    );
 
 begin
    process(clk)
    begin
       if rising_edge(clk) and MemR = '1' then
-         if to_integer(unsigned(PC)) > 16 then -- after last instruction
+         if to_integer(unsigned(PC)) > 12 then -- after last instruction
             IR <= (others => 'X');
          else
             IR(31 downto 24) <= ROM(to_integer(unsigned(PC)));
