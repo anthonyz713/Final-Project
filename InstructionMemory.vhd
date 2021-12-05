@@ -47,12 +47,15 @@ begin
    process(clk)
    begin
       if rising_edge(clk) and MemR = '1' then
-         IR(31 downto 24) <= ROM(to_integer(unsigned(PC)));
-         IR(23 downto 16) <= ROM(to_integer(unsigned(PC)) + 1);
-         IR(15 downto 8) <= ROM(to_integer(unsigned(PC)) + 2);
-         IR(7 downto 0) <= ROM(to_integer(unsigned(PC)) + 3);
-
-         PC <= std_logic_vector(unsigned(PC) + 4);
+         if to_integer(unsigned(PC)) > 16 then -- after last instruction
+            IR <= (others => 'X');
+         else
+            IR(31 downto 24) <= ROM(to_integer(unsigned(PC)));
+            IR(23 downto 16) <= ROM(to_integer(unsigned(PC)) + 1);
+            IR(15 downto 8) <= ROM(to_integer(unsigned(PC)) + 2);
+            IR(7 downto 0) <= ROM(to_integer(unsigned(PC)) + 3);
+            PC <= std_logic_vector(unsigned(PC) + 4);
+         end if;
       end if;
    end process;
 end;

@@ -13,7 +13,10 @@ end RegisterFile;
 architecture RegisterFileBehav of RegisterFile is
 -- 32 registers in MIPS, 32 bits per register
 type register_file_type is array (0 to 31) of std_logic_vector(31 downto 0);
-signal registers: register_file_type := (others => (others => '0')); 
+signal registers: register_file_type := (
+   8 => std_logic_vector(to_signed(8, 32)), 
+   9 => std_logic_vector(to_signed(9, 32)),
+   others => (others => '0')); 
 
 begin
    process(clk, reset)
@@ -21,9 +24,11 @@ begin
       if reset = '1' then
          registers <= (others => (others => '0'));
       elsif rising_edge(clk) then
-         -- Read source registers
-         ReadData1 <= registers(to_integer(unsigned(ReadRegister1)));
-         ReadData2 <= registers(to_integer(unsigned(ReadRegister2)));
+         if (not (ReadRegister1 = "UUUUU")) and (not (ReadRegister2 = "UUUUU")) then
+            -- if there are specified registers to read, read them
+            ReadData1 <= registers(to_integer(unsigned(ReadRegister1)));
+            ReadData2 <= registers(to_integer(unsigned(ReadRegister2)));
+         end if;
 
          -- Write to register, if specified
          if RegWrite = '1' then

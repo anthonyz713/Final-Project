@@ -23,7 +23,7 @@ architecture ALUControlBehav of ALUControl is
 begin
    process(ALUOp)
    begin
-      if ALUOp = "0010" then -- R-type, so look at function code
+      if ALUOp = "0011" then -- R-type, so look at function code
          if FunctionCode = "100000" then -- add
             ALUFunction <= "0010";
          elsif FunctionCode = "100010" then -- sub
