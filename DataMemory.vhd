@@ -10,9 +10,15 @@ entity DataMemory is
 end DataMemory;
 
 architecture DataMemoryBehav of DataMemory is
--- memory is byte-addressed, 4 bytes for 1 word, limit memory to 25 words (0 - 24)
-type data_memory_type is array (0 to 99) of std_logic_vector(7 downto 0);
+-- memory is byte-addressed, 4 bytes for 1 word, limit memory to 10 words (0 - 9)
+type data_memory_type is array (0 to 39) of std_logic_vector(7 downto 0);
 signal data_memory: data_memory_type := (
+   -- Memory[3] = 37, word at index 4, base address = 16
+   12 => "00000000",
+   13 => "00000000",
+   14 => "00000000",
+   15 => "00100101",
+
    -- Memory[4] = -10, word at index 4, base address = 16
    16 => "11111111",
    17 => "11111111",
