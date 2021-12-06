@@ -24,20 +24,37 @@ signal registers: register_file_type := (
 
 begin
    process(clk, reset)
+      variable justWrittenData: std_logic_vector(31 downto 0); 
    begin
       if reset = '1' then
          registers <= (others => (others => '0'));
       elsif rising_edge(clk) then
-         if (not (ReadRegister1 = "UUUUU")) and (not (ReadRegister2 = "UUUUU")) then
-            -- if there are specified registers to read, read them
-            ReadData1 <= registers(to_integer(unsigned(ReadRegister1)));
-            ReadData2 <= registers(to_integer(unsigned(ReadRegister2)));
-         end if;
-
          -- Write to register, if specified
          if RegWrite = '1' then
             registers(to_integer(unsigned(WriteRegister))) <= WriteData;
+            justWrittenData := WriteData;
          end if;
+
+         -- if no instruction, then no registers to read
+         if (ReadRegister1 = "UUUUU" or ReadRegister1 = "XXXXX") then
+            ReadData1 <= (others => 'X');
+            ReadData2 <= (others => 'X');
+         else -- if there are specified registers to read, read them
+            -- If we are reading the value just written to the register, get it directly
+            if (ReadRegister1 = WriteRegister) and RegWrite = '1' then
+               ReadData1 <=  justWrittenData;
+            else
+               ReadData1 <= registers(to_integer(unsigned(ReadRegister1)));
+            end if;
+
+            -- Same, but for ReadData2
+            if (ReadRegister2 = WriteRegister) and RegWrite = '1' then
+               ReadData2 <=  justWrittenData;
+            else
+               ReadData2 <= registers(to_integer(unsigned(ReadRegister2)));
+            end if;
+         end if;
+       
       end if;
    end process;
 end;

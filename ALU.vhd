@@ -30,10 +30,12 @@ begin
    process(clk)
    variable result: std_logic_vector(31 downto 0);
    begin
-      -- on positive clock edge when there are input values
-      if rising_edge(clk) and (((not (input1 = uArray)) and (not (input2 = xArray))) 
-         and ((not (input2 = uArray)) and (not (input2 = xArray)))) then
-         if ALUFunction = "0000" then
+      if rising_edge(clk) then
+         -- if no ALUFunction/no instruction, do not compute a result
+         if (ALUFunction = "XXXX") or (ALUFunction = "UUUU") then
+            ALUResult <= (others => 'X');
+            Zero <= 'X';
+         elsif ALUFunction = "0000" then
             result := input1 and input2;
          elsif ALUFunction = "0001" then
             result := input1 or input2;

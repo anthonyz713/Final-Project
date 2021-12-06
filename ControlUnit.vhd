@@ -33,7 +33,7 @@ begin
             MemWrite <= '0';
             ALUSrc <= '0';
             RegWrite <= '0';
-            ALUOp <= "UUUU";
+            ALUOp <= "XXXX";
          elsif rising_edge(clk) then
             if opcode = "000000" then -- R-type instruction
                RegDst <= '1';
@@ -125,6 +125,17 @@ begin
                ALUSrc <= '1';
                RegWrite <= '1';
                ALUOp <= "0111";
+            -- if no instruction to decode
+            elsif (opcode = "XXXXXX") or (opcode = "UUUUUU") then
+               RegDst <= 'X';
+               Jump <= 'X';
+               Branch <= 'X';
+               MemRead <= 'X';
+               MemtoReg <= 'X';
+               MemWrite <= 'X';
+               ALUSrc <= 'X';
+               RegWrite <= 'X';
+               ALUOp <= "XXXX";
             end if;
          end if;
       end process;
