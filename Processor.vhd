@@ -64,7 +64,7 @@ signal MUXMemtoReg: std_logic_vector(31 downto 0);
 begin
    -- IF
    InstructionMemory: entity work.InstructionMemory port map(clk => clk, MemR => MemR,
-      PC => PC, IR => IR);
+      reset => reset, PC => PC, IR => IR);
 
    IFIDPipelineRegister: entity work.IFIDPipelineRegister port map(
       CurrentInstructionIn => IR, CurrentInstructionOut => IFIDInstruction);
@@ -75,7 +75,7 @@ begin
       Branch => Branch, MemRead => MemRead, MemtoReg => MemtoReg, 
       MemWrite => MemWrite, ALUSrc => ALUSrc, RegWrite => RegWrite, ALUOp => ALUOp);
 
-   RegisterFile: entity work.RegisterFile port map(clk => clk, reset => reset,
+   RegisterFile: entity work.RegisterFile port map(clk => clk, 
       RegWrite => MEMWBRegWrite, ReadRegister1 => IFIDInstruction(25 downto 21), 
       ReadRegister2 => IFIDInstruction(20 downto 16), WriteRegister => MEMWBMUXRegDst, 
       WriteData => MUXMemtoReg, ReadData1 => ReadData1, ReadData2 => ReadData2);

@@ -4,7 +4,7 @@ use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
 
 entity InstructionMemory is
-   port(clk, MemR: in std_logic;
+   port(clk, MemR, reset: in std_logic;
         PC: inout std_logic_vector(31 downto 0) := "00000000000000000000000000000000";
         IR: out std_logic_vector(31 downto 0));
 end InstructionMemory;
@@ -123,7 +123,10 @@ constant ROM: ROM_array := (
 begin
    process(clk)
    begin
-      if rising_edge(clk) and MemR = '1' then
+      if reset = '1' then
+         IR <= (others => '0');
+         PC <= (others => '0');
+      elsif rising_edge(clk) and MemR = '1' then
          if to_integer(unsigned(PC)) > 68 then -- after last instruction
             IR <= (others => '0');
          else

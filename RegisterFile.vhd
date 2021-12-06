@@ -4,7 +4,7 @@ use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
 
 entity RegisterFile is
-   port(clk, reset, RegWrite: in std_logic;
+   port(clk, RegWrite: in std_logic;
         ReadRegister1, ReadRegister2, WriteRegister: in std_logic_vector(4 downto 0);
         WriteData: in std_logic_vector(31 downto 0);        
         ReadData1, ReadData2: out std_logic_vector(31 downto 0));
@@ -24,12 +24,10 @@ signal registers: register_file_type := (
    others => (others => '0')); 
 
 begin
-   process(clk, reset)
+   process(clk)
       variable justWrittenData: std_logic_vector(31 downto 0); 
    begin
-      if reset = '1' then
-         registers <= (others => (others => '0'));
-      elsif rising_edge(clk) then
+      if rising_edge(clk) then
          -- Write to register, if specified
          if RegWrite = '1' then
             registers(to_integer(unsigned(WriteRegister))) <= WriteData;

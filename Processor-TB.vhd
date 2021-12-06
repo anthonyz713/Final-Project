@@ -7,7 +7,7 @@ end ProcessorTB;
 
 architecture ProcessorRBBehavioral of ProcessorTB is
    constant T: time := 20 ns; -- time for one clock cycle
-   constant totalClockCycles: integer := 22; -- total clock cycles to simulate
+   constant totalClockCycles: integer := 50; -- total clock cycles to simulate
    signal i: integer := 1; -- clock cycle counter   
 
    signal clk: std_logic;
@@ -30,6 +30,15 @@ begin
       else
          i <= i + 1;
       end if;
+   end process;
 
+   -- reset
+   process
+   begin
+      wait for 24*T;
+      reset <= '1';
+      wait for T;
+      reset <= '0';
+      wait;
    end process;
 end;
