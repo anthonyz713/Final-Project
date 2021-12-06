@@ -20,6 +20,7 @@ signal registers: register_file_type := (
    11 => std_logic_vector(to_signed(-3, 32)),
    12 => std_logic_vector(to_signed(4, 32)),
    13 => std_logic_vector(to_signed(5, 32)),
+   23 => x"52AB37C1",
    others => (others => '0')); 
 
 begin
@@ -35,11 +36,8 @@ begin
             justWrittenData := WriteData;
          end if;
 
-         -- if no instruction, then no registers to read
-         if (ReadRegister1 = "UUUUU" or ReadRegister1 = "XXXXX") then
-            ReadData1 <= (others => 'X');
-            ReadData2 <= (others => 'X');
-         else -- if there are specified registers to read, read them
+         -- if there are registers to read, read them
+         if (not (ReadRegister1 = "UUUUU")) and (not (ReadRegister1 = "XXXXX")) then
             -- If we are reading the value just written to the register, get it directly
             if (ReadRegister1 = WriteRegister) and RegWrite = '1' then
                ReadData1 <=  justWrittenData;

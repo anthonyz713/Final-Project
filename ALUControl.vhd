@@ -23,10 +23,7 @@ architecture ALUControlBehav of ALUControl is
 begin
    process(ALUOp, FunctionCode)
    begin
-      -- if no ALUOp/no instruction, do not generate ALUFunction
-      if (ALUOp = "XXXX") or (ALUOp = "UUUU") then
-         ALUFunction <= (others => 'X');
-      elsif ALUOp = "0011" then -- R-type, so look at function code
+      if ALUOp = "0011" then -- R-type, so look at function code
          if FunctionCode = "100000" then -- add
             ALUFunction <= "0010";
          elsif FunctionCode = "100010" then -- sub

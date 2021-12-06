@@ -29,43 +29,55 @@ constant xArray: std_logic_vector(31 downto 0) := (others => 'X');
 begin
    process(clk)
    variable result: std_logic_vector(31 downto 0);
+   -- used to determine if EX phase is active
+   -- Initially 1, so do nothing, when ALUFunction is valid,
+   -- change to 0 and drive result and Zero
+   variable doNothing: std_logic := '1';
+
    begin
       if rising_edge(clk) then
-         -- if no ALUFunction/no instruction, do not compute a result
-         if (ALUFunction = "XXXX") or (ALUFunction = "UUUU") then
-            ALUResult <= (others => 'X');
-            Zero <= 'X';
-         elsif ALUFunction = "0000" then
+         if ALUFunction = "0000" then
             result := input1 and input2;
+            doNothing := '0';
          elsif ALUFunction = "0001" then
             result := input1 or input2;
+            doNothing := '0';
          elsif ALUFunction = "0010" then
             result := std_logic_vector(signed(input1) + signed(input2));
+            doNothing := '0';
          elsif ALUFunction = "0110" then
             result := std_logic_vector(signed(input1) - signed(input2));
+            doNothing := '0';
          elsif ALUFunction = "0111" then
             if signed(input1) < signed(input2) then
                result := std_logic_vector(to_signed(1, result'length));
             else
                result := std_logic_vector(to_signed(0, result'length));
             end if;
+            doNothing := '0';
          elsif ALUFunction = "1100" then
             result := input1 nor input2;
+            doNothing := '0';
          elsif ALUFunction = "1101" then
             result := input1 xor input2;
+            doNothing := '0';
          elsif ALUFunction = "1110" then
             result := std_logic_vector(shift_left(signed(input2), to_integer(unsigned(shamt))));  -- shift input2 (rt) to the left shamt times
+            doNothing := '0';
          elsif ALUFunction = "1111" then
             result := std_logic_vector(shift_right(signed(input2), to_integer(unsigned(shamt)))); -- shift input2 (rt) to the right shamt times
+            doNothing := '0';
          end if;
 
-         if to_integer(unsigned(result)) = 0 then
+         if doNothing = '1' then
+            -- do not update Zero
+         elsif to_integer(unsigned(result)) = 0 then
             Zero <= '1';
+            ALUResult <= result;
          else
             Zero <= '0';
+            ALUResult <= result;
          end if;
-
-         ALUResult <= result;
 
       end if;
    end process;

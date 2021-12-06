@@ -10,9 +10,6 @@ entity DataMemory is
 end DataMemory;
 
 architecture DataMemoryBehav of DataMemory is
-constant uArray: std_logic_vector(31 downto 0) := (others => 'U');
-constant xArray: std_logic_vector(31 downto 0) := (others => 'X');
-
 -- memory is byte-addressed, 4 bytes for 1 word, limit memory to 25 words (0 - 24)
 type data_memory_type is array (0 to 99) of std_logic_vector(7 downto 0);
 signal data_memory: data_memory_type := (
@@ -29,18 +26,16 @@ begin
    begin
       -- if on positive clock edge and there is an address
       if rising_edge(clk) then
-         baseAddress := to_integer(unsigned(Address));
-         -- if no Address/no instruction, do not read/write from/to memory
-         if (Address = uArray) or (Address = xArray) then
-            ReadData <= (others => 'X');
-         elsif MemRead = '1' then
+         if MemRead = '1' then
             -- read from memory
+            baseAddress := to_integer(unsigned(Address));
             ReadData(31 downto 24) <= data_memory(baseAddress);
             ReadData(23 downto 16) <= data_memory(baseAddress + 1);
             ReadData(15 downto 8) <=  data_memory(baseAddress + 2);
             ReadData(7 downto 0) <=  data_memory(baseAddress + 3);
          elsif MemWrite = '1' then
             -- write to memory
+            baseAddress := to_integer(unsigned(Address));
             data_memory(baseAddress) <= WriteData(31 downto 24);
             data_memory(baseAddress + 1) <= WriteData(23 downto 16);
             data_memory(baseAddress + 2) <= WriteData(15 downto 8);

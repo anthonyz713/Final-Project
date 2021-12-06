@@ -19,8 +19,6 @@ signal RegDst, Jump, Branch, MemRead, MemtoReg, MemWrite, ALUSrc, RegWrite: std_
 signal ALUOp: std_logic_vector(3 downto 0);
 
 -- RegisterFile
-signal WriteRegister: std_logic_vector(4 downto 0);
-signal WriteDataRegister: std_logic_vector(31 downto 0);
 signal ReadData1, ReadData2: std_logic_vector(31 downto 0);
 
 -- SignExtend

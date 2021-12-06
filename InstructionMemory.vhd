@@ -76,11 +76,11 @@ constant ROM: ROM_array := (
    "10001111",
    "00011000",
    "00000000",
-   "00001000",
+   "00001100",
 
-   -- #12 sw $t9, 4($t0)     -- Memory[4] = 5 = 0000...0101
+   -- #12 sw $s7, 4($t0)     -- Memory[4] = x"52AB37C1"
    "10101101",
-   "00011001",
+   "00010111",
    "00000000",
    "00000100",
 
@@ -108,24 +108,24 @@ constant ROM: ROM_array := (
    "00000000",
    "00000101",
 
-   -- #17 slti $s4, $t5, 10  -- 5 < 10 => 1 = 0001
-   "00101001",
-   "10110100",
-   "00000000",
-   "00001010",
-
-   -- #18 slti $s5, $t5, 2   -- 5 > 2 => 0 = 0000
+   -- #17 slti $s5, $t5, 2   -- 5 > 2 => 0 = 0000
    "00101001",
    "10110101",
    "00000000",
-   "00000010" );
+   "00000010",
+
+   -- #18 slti $s4, $t5, 10  -- 5 < 10 => 1 = 0001
+   "00101001",
+   "10110100",
+   "00000000",
+   "00001010");
 
 begin
    process(clk)
    begin
       if rising_edge(clk) and MemR = '1' then
          if to_integer(unsigned(PC)) > 68 then -- after last instruction
-            IR <= (others => 'X');
+            IR <= (others => '0');
          else
             IR(31 downto 24) <= ROM(to_integer(unsigned(PC)));
             IR(23 downto 16) <= ROM(to_integer(unsigned(PC)) + 1);

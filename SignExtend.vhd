@@ -16,11 +16,9 @@ constant xArray: std_logic_vector(15 downto 0) := (others => 'X');
 begin
    process(clk)
    begin
-      if rising_edge(clk) then
-         -- if no instruction, do not sign extend
-         if (immediate16 = uArray) or (immediate16 = xArray) then
-            immediate32 <= (others => 'X');
-         elsif to_integer(signed(immediate16)) = 0 then
+      -- if on rising clock edge and there is a value to sign extend
+      if rising_edge(clk) and ((not (immediate16 = uArray)) and (not (immediate16 = xArray))) then        
+         if to_integer(signed(immediate16)) = 0 then
             immediate32 <= (others => '0');
          elsif to_integer(signed(immediate16)) > 0 then -- positive
             immediate32(31 downto 16) <= (others => '0');
