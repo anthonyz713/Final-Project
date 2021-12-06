@@ -3,7 +3,8 @@ library ieee;
 use ieee.std_logic_1164.all;
 
 entity Processor is
-   port(clk, reset: in std_logic);
+   port(clk, reset: in std_logic;
+        PC_out, ALU_result: out std_logic_vector(31 downto 0));
 end Processor;
 
 architecture ProcessorBehav of Processor is
@@ -136,4 +137,8 @@ begin
    MUXMemtoReg <= MEMWBReadData when MEMWBMemtoReg = '1' else
                   MEMWBALUResult when MEMWBMemtoReg = '0' else
                   (others => 'X');
+
+   -- output
+   PC_out <= PC;
+   ALU_result <= ALUResult;
 end;
