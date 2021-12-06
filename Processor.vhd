@@ -46,13 +46,13 @@ signal Zero: std_logic;
 signal MUXRegDst: std_logic_vector(4 downto 0);
 
 -- EX/MEM Pipeline Register
-signal EXMEMALUResult: std_logic_vector(31 downto 0);
+signal EXMEMALUResult, EXMEMReadData2: std_logic_vector(31 downto 0);
 signal EXMEMMUXRegDst: std_logic_vector(4 downto 0);
 signal EXMEMZero: std_logic;
 signal EXMEMJump, EXMEMBranch,EXMEMMemRead, EXMEMMemtoReg, EXMEMMemWrite, EXMEMRegWrite: std_logic;
 
 -- DataMemory
-signal Address, WriteDataMemory, ReadData: std_logic_vector(31 downto 0);
+signal ReadData: std_logic_vector(31 downto 0);
 
 -- MEM/WB Pipeline Register
 signal MEMWBReadData, MEMWBALUResult: std_logic_vector(31 downto 0);
@@ -72,14 +72,14 @@ begin
 
    -- ID
    ControlUnit: entity work.ControlUnit port map(clk => clk, reset => reset,
-      opcode => IFIDInstruction(31 downto 26), RegDst => RegDst, Jump => Jump, Branch => Branch,
-      MemRead => MemRead, MemtoReg => MemtoReg, MemWrite => MemWrite,
-      ALUSrc => ALUSrc, RegWrite => RegWrite, ALUOP => ALUOp);
+      opcode => IFIDInstruction(31 downto 26), RegDst => RegDst, Jump => Jump, 
+      Branch => Branch, MemRead => MemRead, MemtoReg => MemtoReg, 
+      MemWrite => MemWrite, ALUSrc => ALUSrc, RegWrite => RegWrite, ALUOp => ALUOp);
 
    RegisterFile: entity work.RegisterFile port map(clk => clk, reset => reset,
-      RegWrite => RegWrite, ReadRegister1 => IFIDInstruction(25 downto 21), 
-      ReadRegister2 => IFIDInstruction(20 downto 16), WriteRegister => WriteRegister, 
-      WriteData => WriteDataRegister, ReadData1 => ReadData1, ReadData2 => ReadData2);
+      RegWrite => MEMWBRegWrite, ReadRegister1 => IFIDInstruction(25 downto 21), 
+      ReadRegister2 => IFIDInstruction(20 downto 16), WriteRegister => MEMWBMUXRegDst, 
+      WriteData => MUXMemtoReg, ReadData1 => ReadData1, ReadData2 => ReadData2);
 
    SignExtend: entity work.SignExtend port map(clk => clk,
       immediate16 => IFIDInstruction(15 downto 0), immediate32 => immediate32);
@@ -106,7 +106,7 @@ begin
              (others => 'X');
    
    ALU: entity work.ALU port map(clk => clk, input1 => IDEXReadData1, input2 => input2,
-      ALUFunction => ALUFunction, ALUResult => ALUResult, Zero => Zero);
+      shamt => IDEXimmediate32(10 downto 6), ALUFunction => ALUFunction, ALUResult => ALUResult, Zero => Zero);
 
    -- RegDst MUX
    MUXRegDst <= IDEXinstruction20to16 when IDEXRegDst = '0' else
@@ -114,16 +114,16 @@ begin
           (others => 'X');
 
    EXMEMPipelineRegister: entity work.EXMEMPipelineRegister port map(clk => clk, ALUResult => ALUResult,
-      MUXRegDst => MUXRegDst, Zero => Zero, Jump => IDEXJump, Branch => IDEXBranch, 
+      ReadData2 => IDEXReadData2, MUXRegDst => MUXRegDst, Zero => Zero, Jump => IDEXJump, Branch => IDEXBranch, 
       MemRead => IDEXMemRead, MemtoReg => IDEXMemtoReg, MemWrite => IDEXMemWrite, RegWrite => IDEXRegWrite,
       
-      ALUResultOut => EXMEMALUResult, MUXRegDstOut => EXMEMMUXRegDst, ZeroOut => EXMEMZero, 
-      JumpOut => EXMEMJump, BranchOut => EXMEMBranch, MemReadOut => EXMEMMemRead, 
+      ALUResultOut => EXMEMALUResult, ReadData2Out => EXMEMReadData2, MUXRegDstOut => EXMEMMUXRegDst, 
+      ZeroOut => EXMEMZero, JumpOut => EXMEMJump, BranchOut => EXMEMBranch, MemReadOut => EXMEMMemRead, 
       MemtoRegOut => EXMEMMemtoReg, MemWriteOut => EXMEMMemWrite, RegWriteOut => EXMEMRegWrite);
 
    -- MEM
    DataMemory: entity work.DataMemory port map(clk => clk, MemRead => EXMEMMemRead,
-      MemWrite => EXMEMMemWrite, Address => Address, WriteData => WriteDataMemory,
+      MemWrite => EXMEMMemWrite, Address => EXMEMALUResult, WriteData => EXMEMReadData2,
       ReadData => ReadData);
    
    MEMWBPipelineRegister: entity work.MEMWBPipelineRegister port map(clk => clk, dataFromMemory => ReadData,
@@ -138,8 +138,4 @@ begin
    MUXMemtoReg <= MEMWBReadData when MEMWBMemtoReg = '1' else
                   MEMWBALUResult when MEMWBMemtoReg = '0' else
                   (others => 'X');
-
-   RegWrite <= MEMWBRegWrite;
-   WriteRegister <= MEMWBMUXRegDst;
-   WriteDataRegister <= MUXMemtoReg;
 end;

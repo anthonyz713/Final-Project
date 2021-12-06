@@ -14,8 +14,12 @@ architecture RegisterFileBehav of RegisterFile is
 -- 32 registers in MIPS, 32 bits per register
 type register_file_type is array (0 to 31) of std_logic_vector(31 downto 0);
 signal registers: register_file_type := (
-   8 => std_logic_vector(to_signed(8, 32)), 
-   9 => std_logic_vector(to_signed(9, 32)),
+   8 => std_logic_vector(to_signed(0, 32)), 
+   9 => std_logic_vector(to_signed(-1, 32)),
+   10 => std_logic_vector(to_signed(2, 32)),
+   11 => std_logic_vector(to_signed(-3, 32)),
+   12 => std_logic_vector(to_signed(4, 32)),
+   13 => std_logic_vector(to_signed(5, 32)),
    others => (others => '0')); 
 
 begin

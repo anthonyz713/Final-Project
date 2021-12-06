@@ -10,10 +10,14 @@ entity SignExtend is
 end SignExtend;
 
 architecture SignExtendBehav of SignExtend is
+constant uArray: std_logic_vector(15 downto 0) := (others => 'U');
+constant xArray: std_logic_vector(15 downto 0) := (others => 'X');
+
 begin
    process(clk)
    begin
-      if rising_edge(clk) then
+      -- on positive clock edge when there is an immediate value
+      if rising_edge(clk) and ((not (immediate16 = uArray)) and (not (immediate16 = xArray))) then
          if to_integer(signed(immediate16)) = 0 then
             immediate32 <= (others => '0');
          elsif to_integer(signed(immediate16)) > 0 then -- positive
