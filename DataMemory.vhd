@@ -6,7 +6,9 @@ use ieee.numeric_std.all;
 entity DataMemory is
    port(clk, MemRead, MemWrite: in std_logic;
         Address, WriteData: in std_logic_vector(31 downto 0);
-        ReadData: out std_logic_vector(31 downto 0));
+        ReadData: out std_logic_vector(31 downto 0);
+        -- For test bench, sw saves at these memory addresses
+        m4, m5, m6, m7: out std_logic_vector(7 downto 0));
 end DataMemory;
 
 architecture DataMemoryBehav of DataMemory is
@@ -27,6 +29,11 @@ signal data_memory: data_memory_type := (
    others => (others => '0'));
 
 begin
+   m4 <= data_memory(4);
+   m5 <= data_memory(5);
+   m6 <= data_memory(6);
+   m7 <= data_memory(7);
+
    process(clk)
    variable baseAddress: Integer;
    begin

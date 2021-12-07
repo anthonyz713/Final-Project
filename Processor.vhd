@@ -4,7 +4,11 @@ use ieee.std_logic_1164.all;
 
 entity Processor is
    port(clk, reset: in std_logic;
-        PC_out, ALU_result: out std_logic_vector(31 downto 0));
+        PC_out, ALU_result: out std_logic_vector(31 downto 0);
+        -- Registers for test bench
+        t0, t1, t2, t3, t4, t5, t6, t7, t8, t9, s0, s1, s2, s3, s4, s5, s6, s7: out std_logic_vector(31 downto 0);
+        -- Data memory values for test bench
+        m4, m5, m6, m7: out std_logic_vector(7 downto 0));
 end Processor;
 
 architecture ProcessorBehav of Processor is
@@ -78,7 +82,10 @@ begin
    RegisterFile: entity work.RegisterFile port map(clk => clk, 
       RegWrite => MEMWBRegWrite, ReadRegister1 => IFIDInstruction(25 downto 21), 
       ReadRegister2 => IFIDInstruction(20 downto 16), WriteRegister => MEMWBMUXRegDst, 
-      WriteData => MUXMemtoReg, ReadData1 => ReadData1, ReadData2 => ReadData2);
+      WriteData => MUXMemtoReg, ReadData1 => ReadData1, ReadData2 => ReadData2,
+      t0 => t0, t1 => t1, t2 => t2, t3 => t3, t4 => t4, t5 => t5, t6 => t6,
+      t7 => t7, t8 => t8, t9 => t9, s0 => s0, s1 => s1, s2 => s2, s3 => s3,
+      s4 => s4, s5 => s5, s6 => s6, s7 => s7);
 
    SignExtend: entity work.SignExtend port map(clk => clk,
       immediate16 => IFIDInstruction(15 downto 0), immediate32 => immediate32);
@@ -123,7 +130,7 @@ begin
    -- MEM
    DataMemory: entity work.DataMemory port map(clk => clk, MemRead => EXMEMMemRead,
       MemWrite => EXMEMMemWrite, Address => EXMEMALUResult, WriteData => EXMEMReadData2,
-      ReadData => ReadData);
+      ReadData => ReadData, m4 => m4, m5 => m5, m6 => m6, m7 => m7);
    
    MEMWBPipelineRegister: entity work.MEMWBPipelineRegister port map(clk => clk, dataFromMemory => ReadData,
       ALUResult => EXMEMALUResult, RegisterDestination => EXMEMMUXRegDst,
