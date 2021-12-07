@@ -121,7 +121,7 @@ constant ROM: ROM_array := (
    "00001010");
 
 begin
-   process(clk)
+   process(clk, reset)
    begin
       if reset = '1' then
          IR <= (others => '0');
